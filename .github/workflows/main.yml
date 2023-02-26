@@ -1,22 +1,26 @@
-name: Deploy to Azure Storage
+name: Blob storage website CI
 
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches: [ main ]
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: azure/login@v1
-        with:
+    - uses: actions/checkout@v3
+    - uses: azure/login@v1
+      with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy static website to Azure Storage
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.26.0
-          inlineScript: |
-            az storage blob upload-batch --destination $web --source . --account-name cloudresumestoragev2
+    - name: Upload to blob storage
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+            az storage blob upload-batch --account-name cloudresumestoragev2 --auth-mode key -d '$web' -s .
+            
+            # Azure logout
+    - name: logout
+      run: |
+            az logout
+      if: always()
