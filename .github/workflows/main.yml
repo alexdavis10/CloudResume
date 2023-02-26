@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install Azure CLI
-        uses: azure/setup-azure-cli@v1
+        uses: azure/cli@v1
         with:
           version: latest
 
@@ -22,7 +22,7 @@ jobs:
 
       - name: Invalidate CDN cache
         if: ${{ always() }}
-        uses: Azure/invalidate-cdn@v1
+        uses: azure/cli@v1
         with:
           resource-group-name: CloudResume-Challenge-RG
           endpoint-name: alex-cloud-resume (staticwebsite-cdn/alex-cloud-resume)
