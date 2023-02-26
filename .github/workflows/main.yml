@@ -6,18 +6,17 @@ on:
       - main
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: azure/login@v1
-        with:
+    - uses: actions/checkout@v3
+    - uses: azure/login@v1
+      with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy static website to Azure Storage
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.26.0
+    - name: Update Site
+      uses: azure/CLI@v1
+      with:
           inlineScript: |
             az storage blob upload-batch --account-name cloudresumestoragev2 --auth-mode key -d '$web' -s .
             
