@@ -1,34 +1,31 @@
-name: Update Azure Static Website
+name: Blob storage website CI
 
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+    - uses: azure/login@v1
+      with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Install Azure CLI
-        uses: azure/cli@v1
-        with:
-          version: latest
+    - name: Update to blob storage
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+            az storage blob upload-batch --account-name cloudresumestoragev2 --destination $web --source . --pattern index.html --overwrite
+    - name: Purge CDN endpoint
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+           az cdn endpoint purge --content-paths  "/*" --profile-name "CDN_PROFILE_NAME" --name "CDN_ENDPOINT" --resource-group "RESOURCE_GROUP"
 
-      - name: Update index.html file
-        run: az storage blob upload-batch --account-name cloudresumestoragev2 --destination $web --source . --pattern index.html --overwrite
-
-      - name: Invalidate CDN cache
-        if: ${{ always() }}
-        uses: azure/cli@v1
-        with:
-          resource-group-name: CloudResume-Challenge-RG
-          endpoint-name: alex-cloud-resume (staticwebsite-cdn/alex-cloud-resume)
-          paths: /index.html
-        env:
-          AZURE_CDN_SUBSCRIPTION_ID: ${{ secrets.AZURE_CDN_SUBSCRIPTION_ID }}
-          AZURE_CDN_TENANT_ID: ${{ secrets.AZURE_CDN_TENANT_ID }}
-          AZURE_CDN_CLIENT_ID: ${{ secrets.AZURE_CDN_CLIENT_ID }}
-          AZURE_CDN_CLIENT_SECRET: ${{ secrets.AZURE_CDN_CLIENT_SECRET }}
+  # Azure logout
+    - name: logout
+      run: |
+            az logout
+      if: always()
