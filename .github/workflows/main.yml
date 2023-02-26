@@ -1,4 +1,4 @@
-name: Deploy to Azure Storage
+name: Update Azure Static Website
 
 on:
   push:
@@ -6,22 +6,32 @@ on:
       - main
 
 jobs:
-  build:
+  update_static_website:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: azure/login@v1
+      - name: Checkout code
+        uses: actions/checkout@v2
+        uses: azure/login@v1
       with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}v
 
-    - name: Update Site
-      uses: azure/CLI@v1
-      with:
-          inlineScript: |
-            az storage blob upload-batch --account-name cloudresumestoragev2 --auth-mode key -d '$web' -s . --overwrite
-            
+      - name: Install Azure CLI
+        uses: azure/setup-azure-cli@v1
+        with:
+          version: latest
 
-   # Azure logout
+      - name: Update index.html file
+        run: az storage blob upload-batch --account-name cloudresumestoragev2 --destination $web --source . --pattern index.html --overwrite
+
+      - name: Invalidate CDN cache
+        if: ${{ always() }}
+        uses: Azure/invalidate-cdn@v1
+        with:
+          resource-group-name: <your-resource-group-name>
+          endpoint-name: <your-endpoint-name>
+          paths: /index.html
+          
+          # Azure logout
     - name: logout
       run: |
             az logout
