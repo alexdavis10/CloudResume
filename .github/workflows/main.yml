@@ -15,7 +15,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy static website to Azure Storage
-        uses: azure/cli-action@v1
+        uses: azure/cli-action
         with:
           azcliversion: 2.26.0
           inlineScript: |
