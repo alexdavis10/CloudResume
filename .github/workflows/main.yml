@@ -1,38 +1,31 @@
-name: Update Azure Static Website
+name: Blob storage website CI
 
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches: [ main ]
 
 jobs:
-  update_static_website:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        uses: azure/login@v1
+    - uses: actions/checkout@v3
+    - uses: azure/login@v1
       with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}v
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Install Azure CLI
-        uses: azure/setup-azure-cli@v1
-        with:
-          version: latest
+    - name: Update index.html file
+      run: az storage blob upload-batch --account-name <your-storage-account-name> --destination <your-container-name> --source . --pattern index.html --overwrite
 
-      - name: Update index.html file
-        run: az storage blob upload-batch --account-name cloudresumestoragev2 --destination $web --source . --pattern index.html --overwrite
-
-      - name: Invalidate CDN cache
-        if: ${{ always() }}
-        uses: Azure/invalidate-cdn@v1
-        with:
+    name: Invalidate CDN cache
+    if: ${{ always() }}
+    uses: Azure/invalidate-cdn@v1
+    with:
           resource-group-name: <your-resource-group-name>
           endpoint-name: <your-endpoint-name>
           paths: /index.html
           
-          # Azure logout
-    - name: logout
-      run: |
+# Azure logout
+  name: logout
+  run: |
             az logout
       if: always()
