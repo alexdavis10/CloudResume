@@ -15,6 +15,7 @@ Learn more about the Cloud Resume Challenge at [cloudresumechallenge.dev](https:
 - [Installation](#installation)
 - [Usage](#usage)
 - [Deployment](#deployment)
+- [Infrastructure Deployment](#infrastructure-deployment)
 
 ## Features
 
@@ -53,3 +54,22 @@ To manually trigger a deployment, you can run the following command:
 ```bash
 git commit -am "Update resume"
 git push origin main
+```
+
+## Infrastructure Deployment
+
+To deploy the necessary infrastructure using the Bicep script, follow these steps:
+
+1. Ensure you have the Azure CLI installed and logged in.
+
+2. Navigate to the `infrastructure` directory:
+    ```bash
+    cd infrastructure
+    ```
+
+3. Run the Bicep script to create the resources:
+    ```bash
+    az deployment group create --resource-group <your-resource-group> --template-file main.bicep --parameters storageAccountName=<your-storage-account-name> cdnProfileName=<your-cdn-profile-name> cdnEndpointName=<your-cdn-endpoint-name> cdnEndpointOriginHostHeader=<your-storage-account-name>.z13.web.core.windows.net
+    ```
+
+Replace `<your-resource-group>`, `<your-storage-account-name>`, `<your-cdn-profile-name>`, and `<your-cdn-endpoint-name>` with your desired values.
