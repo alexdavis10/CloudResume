@@ -232,6 +232,18 @@
    <script src="js/jquery.magnific-popup.min.js"></script>
    <script src="js/init.js"></script>
    <script src="js/main.js"></script>
+   <script>
+      document.addEventListener("DOMContentLoaded", function() {
+         fetch("https://<your-function-app-name>.azurewebsites.net/api/visitorCount")
+            .then(response => response.json())
+            .then(data => {
+               const visitorCountElement = document.createElement("p");
+               visitorCountElement.textContent = `Visitor Count: ${data.count}`;
+               document.body.appendChild(visitorCountElement);
+            })
+            .catch(error => console.error("Error fetching visitor count:", error));
+      });
+   </script>
 
 </body>
 </html>
