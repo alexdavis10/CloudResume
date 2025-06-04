@@ -34,22 +34,19 @@ Learn more about the Cloud Resume Challenge at [cloudresumechallenge.dev](https:
 
 2. Set up your Azure Storage account and CDN following the instructions on the [Azure documentation](https://docs.microsoft.com/en-us/azure/storage/).
 
-3. Configure your GitHub Actions workflow with your Azure credentials. Update the `.github/workflows/main.yml` file with your Azure storage account and function app details.
+3. Configure your GitHub Actions workflow with your Azure credentials. Update the `.github/workflows/main.yml` file with your Azure storage account details.
 
 ## Usage
 
 - Modify `index.html` and the CSS files under the `css/` directory to customize your resume content and design.
 - Add or replace image assets in the `images/` directory.
-- Update the Azure Function App code in `function_app/main.py` as needed.
 
 ## Deployment
 
 This project uses GitHub Actions for continuous deployment. On every commit to the `main` branch, the workflow defined in `.github/workflows/main.yml` will:
 
-1. Build the project.
-2. Deploy the contents to the Azure Storage account.
-3. Deploy the Azure Function App from the `function_app` directory.
-4. Purge the Azure CDN to ensure the latest content is served.
+1. Upload the site files to the Azure Storage account.
+2. Purge the Azure CDN to ensure the latest content is served.
 
 > **Note:** The Bicep template deployment step has been removed. All infrastructure should be provisioned manually or by other means before using this workflow.
 
